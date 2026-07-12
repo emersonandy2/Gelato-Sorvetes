@@ -58,14 +58,14 @@ export class ProductRepository {
         case "price-desc":
           return { price: "desc" as const };
         case "name-asc":
-          return { name: "asc" as const };
+          return { name: { sort: "asc" as const, collation: "pt-BR-x-icu" } };
         case "name-desc":
-          return { name: "desc" as const };
+          return { name: { sort: "desc" as const, collation: "pt-BR-x-icu" } };
         case "newest":
         default:
           return { createdAt: "desc" as const };
       }
-    })();
+    })() as Record<string, unknown>;
 
     const skip = (page - 1) * limit;
 
