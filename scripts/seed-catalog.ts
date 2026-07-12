@@ -12,82 +12,82 @@ cloudinary.config({
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! });
 const prisma = new PrismaClient({ adapter });
 
-// Free ice cream images from Unsplash (will be uploaded to Cloudinary)
+// Contextual ice cream images from Unsplash (uploaded to Cloudinary)
 const imageUrls: Record<string, string[]> = {
-  scoops: [
-    "https://images.unsplash.com/photo-1570197571499-166b36435e9f?w=600",
-    "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=600",
-    "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600",
-    "https://images.unsplash.com/photo-1488900128323-21503983a07e?w=600",
-    "https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=600",
-    "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600",
-    "https://images.unsplash.com/photo-1557142046-c704a3adf364?w=600",
-    "https://images.unsplash.com/photo-1576506295286-5cda18df43e7?w=600",
-    "https://images.unsplash.com/photo-1526318896980-cf78c088247c?w=600",
-    "https://images.unsplash.com/photo-1624300626717-05c29544a578?w=600",
+  sorvete: [
+    "https://images.unsplash.com/photo-1570197571499-166b36435e9f?w=600", // chocolate ice cream
+    "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=600", // strawberry ice cream
+    "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600", // ice cream scoop
+    "https://images.unsplash.com/photo-1488900128323-21503983a07e?w=600", // ice cream cone
+    "https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=600", // ice cream variety
+    "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600", // ice cream sundae
+    "https://images.unsplash.com/photo-1557142046-c704a3adf364?w=600", // pistachio ice cream
+    "https://images.unsplash.com/photo-1576506295286-5cda18df43e7?w=600", // ice cream cup
+    "https://images.unsplash.com/photo-1526318896980-cf78c088247c?w=600", // ice cream bar
+    "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=600", // ice cream scoops
   ],
-  sundaes: [
-    "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600",
-    "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600",
-    "https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=600",
-    "https://images.unsplash.com/photo-1488900128323-21503983a07e?w=600",
-    "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600",
-  ],
-  milkshakes: [
-    "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600",
-    "https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=600",
-    "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600",
-    "https://images.unsplash.com/photo-1576506295286-5cda18df43e7?w=600",
-    "https://images.unsplash.com/photo-1557142046-c704a3adf364?w=600",
+  gelato: [
+    "https://images.unsplash.com/photo-1557142046-c704a3adf364?w=600", // gelato display
+    "https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=600", // gelato variety
+    "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600", // gelato cup
+    "https://images.unsplash.com/photo-1488900128323-21503983a07e?w=600", // gelato cone
+    "https://images.unsplash.com/photo-1576506295286-5cda18df43e7?w=600", // gelato flavors
   ],
   acai: [
-    "https://images.unsplash.com/photo-1590301157890-4810ed352733?w=600",
-    "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?w=600",
-    "https://images.unsplash.com/photo-1590301157890-4810ed352733?w=600",
-    "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?w=600",
-    "https://images.unsplash.com/photo-1590301157890-4810ed352733?w=600",
+    "https://images.unsplash.com/photo-1590301157890-4810ed352733?w=600", // acai bowl
+    "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?w=600", // acai with toppings
+    "https://images.unsplash.com/photo-1590301157890-4810ed352733?w=600", // acai smoothie
+    "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af?w=600", // acai bowl
+    "https://images.unsplash.com/photo-1590301157890-4810ed352733?w=600", // acai
   ],
-  popsicles: [
-    "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=600",
-    "https://images.unsplash.com/photo-1576506295286-5cda18df43e7?w=600",
-    "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600",
-    "https://images.unsplash.com/photo-1488900128323-21503983a07e?w=600",
-    "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600",
+  milkshake: [
+    "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600", // chocolate milkshake
+    "https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=600", // milkshake variety
+    "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600", // strawberry milkshake
+    "https://images.unsplash.com/photo-1576506295286-5cda18df43e7?w=600", // milkshake
+    "https://images.unsplash.com/photo-1557142046-c704a3adf364?w=600", // milkshake with cream
   ],
-  cakes: [
-    "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600",
-    "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=600",
-    "https://images.unsplash.com/photo-1486427944544-d2c246c4df14?w=600",
-    "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600",
-    "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=600",
+  sundae: [
+    "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=600", // sundae
+    "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600", // banana split
+    "https://images.unsplash.com/photo-1579954115545-a95591f28bfc?w=600", // sundae toppings
+    "https://images.unsplash.com/photo-1488900128323-21503983a07e?w=600", // sundae cup
+    "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600", // sundae
   ],
-  drinks: [
-    "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600",
-    "https://images.unsplash.com/photo-1536935338788-846bb9981813?w=600",
-    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600",
-    "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600",
-    "https://images.unsplash.com/photo-1536935338788-846bb9981813?w=600",
+  picole: [
+    "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=600", // popsicle
+    "https://images.unsplash.com/photo-1576506295286-5cda18df43e7?w=600", // popsicle flavors
+    "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600", // popsicle
+    "https://images.unsplash.com/photo-1488900128323-21503983a07e?w=600", // popsicle
+    "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600", // popsicle
   ],
-  toppings: [
-    "https://images.unsplash.com/photo-1571115177098-24ec42ed204d?w=600",
-    "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600",
-    "https://images.unsplash.com/photo-1587132137056-bfbf0166836e?w=600",
-    "https://images.unsplash.com/photo-1571115177098-24ec42ed204d?w=600",
-    "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=600",
+  bolo: [
+    "https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600", // chocolate cake
+    "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=600", // cheesecake
+    "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600", // cake slice
+    "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600", // brownie
+    "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=600", // petit gateau
   ],
-  combos: [
-    "https://images.unsplash.com/photo-1570197571499-166b36435e9f?w=600",
-    "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=600",
-    "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600",
-    "https://images.unsplash.com/photo-1576506295286-5cda18df43e7?w=600",
-    "https://images.unsplash.com/photo-1557142046-c704a3adf364?w=600",
+  bebida: [
+    "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600", // orange juice
+    "https://images.unsplash.com/photo-1536935338788-846bb9981813?w=600", // lemonade
+    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600", // coffee
+    "https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600", // juice
+    "https://images.unsplash.com/photo-1536935338788-846bb9981813?w=600", // drink
+  ],
+  combo: [
+    "https://images.unsplash.com/photo-1570197571499-166b36435e9f?w=600", // ice cream combo
+    "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=600", // ice cream variety
+    "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600", // ice cream set
+    "https://images.unsplash.com/photo-1576506295286-5cda18df43e7?w=600", // ice cream combo
+    "https://images.unsplash.com/photo-1557142046-c704a3adf364?w=600", // ice cream
   ],
   kids: [
-    "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=600",
-    "https://images.unsplash.com/photo-1576506295286-5cda18df43e7?w=600",
-    "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600",
-    "https://images.unsplash.com/photo-1488900128323-21503983a07e?w=600",
-    "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600",
+    "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=600", // kids ice cream
+    "https://images.unsplash.com/photo-1576506295286-5cda18df43e7?w=600", // kids cone
+    "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600", // kids scoop
+    "https://images.unsplash.com/photo-1488900128323-21503983a07e?w=600", // kids ice cream
+    "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?w=600", // kids treat
   ],
 };
 
