@@ -25,8 +25,7 @@ interface WhatsAppOrder {
 }
 
 export function buildWhatsAppMessage(order: WhatsAppOrder): string {
-  const address = `${order.street}, ${order.number} - ${order.district}`;
-  const cityLine = `${order.city} - CEP: ${order.zipCode}`;
+  const address = `${order.street}, ${order.number} - ${order.district}, ${order.city} - CEP: ${order.zipCode}`;
   const complement = order.complement ? `\nComplemento: ${order.complement}` : "";
 
   const paymentLabel = PAYMENT_METHODS_LABELS[order.paymentMethod] || order.paymentMethod;
@@ -37,30 +36,29 @@ export function buildWhatsAppMessage(order: WhatsAppOrder): string {
 
   const itemsList = order.items
     .map(
-      (item) => `  ${item.name} x${item.quantity} — ${formatCurrency(item.unitPrice * item.quantity)}`
+      (item) => `• ${item.name} x${item.quantity} - ${formatCurrency(item.unitPrice * item.quantity)}`
     )
     .join("\n");
 
-  const notes = order.notes ? `\n\nObs: ${order.notes}` : "";
+  const notes = order.notes ? `\n${order.notes}` : "Nenhuma";
 
   return (
-    `*Pedido - Gelato & Sorvetes*\n` +
+    `🛒 *NOVO PEDIDO RECEBIDO!*\n` +
     `\n` +
-    `*Cliente:* ${order.fullName}\n` +
-    `*Tel:* ${order.phone}\n` +
+    `👤 *Cliente:* ${order.fullName}\n` +
+    `📞 *Telefone:* ${order.phone}\n` +
+    `📍 *Endereço:* ${address}${complement}\n` +
+    `💳 *Forma de Pagamento:* ${paymentInfo}\n` +
     `\n` +
-    `*Endereco:*\n` +
-    `  ${address}\n` +
-    `  ${cityLine}${complement}\n` +
-    `\n` +
-    `*Pagamento:* ${paymentInfo}\n` +
-    `\n` +
-    `*Itens:*\n` +
+    `🧾 *Itens do Pedido:*\n` +
     `${itemsList}\n` +
     `\n` +
-    `*Entrega:* ${formatCurrency(order.deliveryFee)}\n` +
-    `*Total:* ${formatCurrency(order.total)}` +
-    notes
+    `📝 *Observações:*\n` +
+    `${notes}\n` +
+    `\n` +
+    `💰 *Total do Pedido:* *${formatCurrency(order.total)}*\n` +
+    `\n` +
+    `🙏 Obrigado pela preferência! Seu pedido foi registrado com sucesso.`
   );
 }
 

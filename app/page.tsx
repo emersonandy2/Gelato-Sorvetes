@@ -112,7 +112,7 @@ export default function HomePage() {
                       <div className="text-3xl mb-2">
                         {category.slug === "sorvete" && "🍨"}
                         {category.slug === "gelato" && "🍦"}
-                        {category.slug === "acai" && "🫐"}
+                        {category.slug === "acai" && "🍇"}
                         {category.slug === "milkshake" && "🥤"}
                         {category.slug === "combo" && "🎉"}
                         {!["sorvete", "gelato", "acai", "milkshake", "combo"].includes(category.slug) && "🍫"}
