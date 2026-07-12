@@ -20,6 +20,7 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:seed": "tsx prisma/seed.ts",
+    "db:admin": "tsx scripts/create-admin.ts",
     "db:studio": "prisma studio"
   },
   "dependencies": {
