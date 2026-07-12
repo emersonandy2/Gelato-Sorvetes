@@ -167,10 +167,8 @@ export default function AdminProductsPage() {
                           </Button>
                         </Link>
                         <AlertDialog>
-                          <AlertDialogTrigger>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive">
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                          <AlertDialogTrigger render={<Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" />}>
+                            <Trash2 className="h-4 w-4" />
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>

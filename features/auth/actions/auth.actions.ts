@@ -49,5 +49,22 @@ export async function verifyOtpAction(email: string, code: string) {
 }
 
 export async function getSessionAction(token: string) {
-  return authService.getSession(token);
+  const session = await authService.getSession(token);
+
+  if (session) {
+    const { cookies } = await import("next/headers");
+    const cookieStore = await cookies();
+    const existing = cookieStore.get("auth-token")?.value;
+    if (existing !== token) {
+      cookieStore.set("auth-token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60,
+        path: "/",
+      });
+    }
+  }
+
+  return session;
 }

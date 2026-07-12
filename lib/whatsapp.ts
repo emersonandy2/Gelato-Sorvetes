@@ -25,8 +25,9 @@ interface WhatsAppOrder {
 }
 
 export function buildWhatsAppMessage(order: WhatsAppOrder): string {
-  const address = `${order.street}, ${order.number} - ${order.district}, ${order.city} - CEP: ${order.zipCode}`;
-  const fullAddress = order.complement ? `${address} (${order.complement})` : address;
+  const address = `${order.street}, ${order.number} - ${order.district}`;
+  const cityLine = `${order.city} - CEP: ${order.zipCode}`;
+  const complement = order.complement ? `\nComplemento: ${order.complement}` : "";
 
   const paymentLabel = PAYMENT_METHODS_LABELS[order.paymentMethod] || order.paymentMethod;
   const paymentInfo =
@@ -36,29 +37,31 @@ export function buildWhatsAppMessage(order: WhatsAppOrder): string {
 
   const itemsList = order.items
     .map(
-      (item) =>
-        `• ${item.name} x${item.quantity} - ${formatCurrency(item.unitPrice * item.quantity)}`
+      (item) => `  ${item.name} x${item.quantity} — ${formatCurrency(item.unitPrice * item.quantity)}`
     )
     .join("\n");
 
-  const message = `🍦 *Novo Pedido - Gelato & Sorvetes*
+  const notes = order.notes ? `\n\nObs: ${order.notes}` : "";
 
-👤 *Cliente:* ${order.fullName}
-📱 *Telefone:* ${order.phone}
-
-📍 *Endereço:*
-${fullAddress}
-
-💳 *Forma de Pagamento:* ${paymentInfo}
-
-🛒 *Itens:*
-${itemsList}
-
-${order.notes ? `📝 *Observações:* ${order.notes}\n` : ""}
-💰 *Taxa de Entrega:* ${formatCurrency(order.deliveryFee)}
-💵 *Total:* ${formatCurrency(order.total)}`;
-
-  return message;
+  return (
+    `*Pedido - Gelato & Sorvetes*\n` +
+    `\n` +
+    `*Cliente:* ${order.fullName}\n` +
+    `*Tel:* ${order.phone}\n` +
+    `\n` +
+    `*Endereco:*\n` +
+    `  ${address}\n` +
+    `  ${cityLine}${complement}\n` +
+    `\n` +
+    `*Pagamento:* ${paymentInfo}\n` +
+    `\n` +
+    `*Itens:*\n` +
+    `${itemsList}\n` +
+    `\n` +
+    `*Entrega:* ${formatCurrency(order.deliveryFee)}\n` +
+    `*Total:* ${formatCurrency(order.total)}` +
+    notes
+  );
 }
 
 export function buildWhatsAppUrl(phoneNumber: string, message: string): string {

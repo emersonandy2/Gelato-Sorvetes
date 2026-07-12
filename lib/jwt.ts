@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify } from "jose";
 
 function getSecret(): Uint8Array {
-  const secretString = process.env.JWT_SECRET || "gelato-dev-secret-change-in-production-min-32-chars!";
+  const secretString = process.env.JWT_SECRET || "E542115936a@356_841";
   return new TextEncoder().encode(secretString);
 }
 
