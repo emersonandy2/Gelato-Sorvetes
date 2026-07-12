@@ -1,29 +1,328 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-
 generator client {
-  provider   = "prisma-client"
-  output     = "./generated"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
+// ==================== AUTH ====================
+
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  orders    Order[]
+  reviews   Review[]
+  favorites Favorite[]
+  cart      Cart?
+
+  @@map("users")
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
+model OtpCode {
+  id        String   @id @default(cuid())
+  email     String
+  code      String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([email, used])
+  @@index([expiresAt])
+  @@map("otp_codes")
+}
+
+model AdminUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      String   @default("admin")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admin_users")
+}
+
+// ==================== CATALOG ====================
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  image     String?
+  sortOrder Int       @default(0)
+  active    Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  products Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String?
+  price           Decimal  @db.Decimal(10, 2)
+  size            String?
+  ingredients     String?
+  preparationTime Int?
+  stock           Int      @default(0)
+  available       Boolean  @default(true)
+  featured        Boolean  @default(false)
+  promotion       Boolean  @default(false)
+  categoryId      String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  category            Category             @relation(fields: [categoryId], references: [id])
+  images              ProductImage[]
+  cartItems           CartItem[]
+  orderItems          OrderItem[]
+  promotionProducts   PromotionProduct[]
+  reviews             Review[]
+  favorites           Favorite[]
+  customizations      ProductCustomization[]
+
+  @@index([categoryId])
+  @@index([available, featured])
+  @@index([available, promotion])
+  @@index([createdAt])
+  @@map("products")
+}
+
+model ProductImage {
+  id        String  @id @default(cuid())
+  url       String
+  alt       String?
+  sortOrder Int     @default(0)
+  productId String
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("product_images")
+}
+
+model ProductCustomization {
+  id        String  @id @default(cuid())
+  name      String
+  price     Decimal @db.Decimal(10, 2)
+  available Boolean @default(true)
+  productId String
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("product_customizations")
+}
+
+// ==================== PROMOTIONS ====================
+
+model Promotion {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  discount    Decimal  @db.Decimal(5, 2)
+  startDate   DateTime
+  endDate     DateTime
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products PromotionProduct[]
+
+  @@map("promotions")
+}
+
+model PromotionProduct {
+  id           String @id @default(cuid())
+  promotionId  String
+  productId    String
+
+  promotion Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([promotionId, productId])
+  @@map("promotion_products")
+}
+
+// ==================== CART ====================
+
+model Cart {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user  User       @relation(fields: [userId], references: [id])
+  items CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  cartId    String
+  productId String
+  quantity  Int     @default(1)
+
+  cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([cartId, productId])
+  @@map("cart_items")
+}
+
+// ==================== ORDERS ====================
+
+model Order {
+  id              String   @id @default(cuid())
+  userId          String
+  status          String   @default("pending")
+  paymentMethod   String
+  changeFor       Decimal? @db.Decimal(10, 2)
+  deliveryFee     Decimal  @default(0) @db.Decimal(10, 2)
+  total           Decimal  @db.Decimal(10, 2)
+  notes           String?
+  fullName        String
+  phone           String
+  zipCode         String
+  street          String
+  number          String
+  district        String
+  city            String
+  complement      String?
+  neighborhood    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user  User        @relation(fields: [userId], references: [id])
+  items OrderItem[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  unitPrice Decimal @db.Decimal(10, 2)
+
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+// ==================== COUPONS ====================
+
+model Coupon {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  discount    Decimal  @db.Decimal(5, 2)
+  type        String   @default("percentage")
+  minOrder    Decimal? @db.Decimal(10, 2)
+  maxUses     Int?
+  usedCount   Int      @default(0)
+  startDate   DateTime
+  endDate     DateTime
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([code, active])
+  @@index([startDate, endDate])
+  @@map("coupons")
+}
+
+// ==================== REVIEWS ====================
+
+model Review {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([userId, productId])
+  @@map("reviews")
+}
+
+// ==================== FAVORITES ====================
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+
+  @@unique([userId, productId])
+  @@map("favorites")
+}
+
+// ==================== SETTINGS ====================
+
+model StoreSettings {
+  id     String @id @default(cuid())
+  key    String @unique
+  value  String
+
+  @@map("store_settings")
+}
+
+model Banner {
+  id        String   @id @default(cuid())
   title     String
-  content   String?
-  published Boolean @default(false)
-  authorId  Int
-  author    User    @relation(fields: [authorId], references: [id])
+  subtitle  String?
+  image     String
+  link      String?
+  active    Boolean  @default(true)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("banners")
+}
+
+// ==================== DELIVERY ====================
+
+model DeliveryArea {
+  id     String  @id @default(cuid())
+  name   String
+  active Boolean @default(true)
+
+  neighborhoods NeighborhoodFee[]
+
+  @@map("delivery_areas")
+}
+
+model NeighborhoodFee {
+  id             String  @id @default(cuid())
+  name           String
+  fee            Decimal @db.Decimal(10, 2)
+  deliveryAreaId String
+
+  deliveryArea DeliveryArea @relation(fields: [deliveryAreaId], references: [id], onDelete: Cascade)
+
+  @@map("neighborhood_fees")
 }
