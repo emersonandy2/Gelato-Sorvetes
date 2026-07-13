@@ -18,7 +18,7 @@ export const createProductSchema = z.object({
   featured: z.boolean().optional(),
   promotion: z.boolean().optional(),
   categoryId: z.string().min(1, "Categoria é obrigatória"),
-  images: z.array(z.string()).max(10).optional(),
+  images: z.array(z.object({ url: z.string(), alt: z.string().optional() })).max(10).optional(),
   customizations: z.array(z.object({
     name: z.string().min(1),
     price: z.number().positive(),
