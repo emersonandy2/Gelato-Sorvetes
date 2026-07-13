@@ -92,16 +92,16 @@ const imageUrls: Record<string, string[]> = {
 };
 
 const categories = [
-  { name: "Sorvetes", slug: "sorvete", sortOrder: 1 },
-  { name: "Gelatos", slug: "gelato", sortOrder: 2 },
-  { name: "Açaís", slug: "acai", sortOrder: 3 },
-  { name: "Milkshakes", slug: "milkshake", sortOrder: 4 },
-  { name: "Sundae", slug: "sundae", sortOrder: 5 },
-  { name: "Picolés", slug: "picole", sortOrder: 6 },
-  { name: "Bolos", slug: "bolo", sortOrder: 7 },
-  { name: "Bebidas", slug: "bebida", sortOrder: 8 },
-  { name: "Combos", slug: "combo", sortOrder: 9 },
-  { name: "Kids", slug: "kids", sortOrder: 10 },
+  { name: "Sorvetes", slug: "sorvete", icon: "🍨", sortOrder: 1 },
+  { name: "Gelatos", slug: "gelato", icon: "🍦", sortOrder: 2 },
+  { name: "Açaís", slug: "acai", icon: "🍇", sortOrder: 3 },
+  { name: "Milkshakes", slug: "milkshake", icon: "🥤", sortOrder: 4 },
+  { name: "Sundae", slug: "sundae", icon: "🍫", sortOrder: 5 },
+  { name: "Picolés", slug: "picole", icon: "🧊", sortOrder: 6 },
+  { name: "Bolos", slug: "bolo", icon: "🍰", sortOrder: 7 },
+  { name: "Bebidas", slug: "bebida", icon: "🧃", sortOrder: 8 },
+  { name: "Combos", slug: "combo", icon: "🎉", sortOrder: 9 },
+  { name: "Kids", slug: "kids", icon: "⭐", sortOrder: 10 },
 ];
 
 const products = [
@@ -216,11 +216,11 @@ async function main() {
   for (const cat of categories) {
     const created = await prisma.category.upsert({
       where: { slug: cat.slug },
-      update: { name: cat.name, sortOrder: cat.sortOrder },
+      update: { name: cat.name, icon: cat.icon, sortOrder: cat.sortOrder },
       create: cat,
     });
     categoryMap[cat.slug] = created.id;
-    console.log(`  ✅ ${cat.name}`);
+    console.log(`  ✅ ${cat.icon} ${cat.name}`);
   }
 
   console.log("\n🍦 Creating products with Cloudinary images...");

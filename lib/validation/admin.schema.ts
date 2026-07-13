@@ -30,6 +30,7 @@ export const updateProductSchema = createProductSchema.partial();
 export const createCategorySchema = z.object({
   name: z.string().min(1, "Nome é obrigatório").max(100),
   slug: z.string().max(100).optional(),
+  icon: z.string().max(10).optional(),
   image: z.string().url().optional(),
   sortOrder: z.number().int().min(0).optional(),
 });

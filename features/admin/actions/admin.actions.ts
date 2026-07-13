@@ -88,7 +88,7 @@ export async function getAllCategoriesAction() {
   return adminService.getAllCategories();
 }
 
-export async function createCategoryAction(data: { name: string; slug?: string; image?: string; sortOrder?: number }) {
+export async function createCategoryAction(data: { name: string; slug?: string; icon?: string; image?: string; sortOrder?: number }) {
   await requireAdmin();
   const validated = createCategorySchema.parse(data);
   return categoryService.createCategory(validated);
@@ -96,7 +96,7 @@ export async function createCategoryAction(data: { name: string; slug?: string; 
 
 export async function updateCategoryAction(
   id: string,
-  data: { name?: string; slug?: string; image?: string; sortOrder?: number; active?: boolean }
+  data: { name?: string; slug?: string; icon?: string; image?: string; sortOrder?: number; active?: boolean }
 ) {
   await requireAdmin();
   const validated = updateCategorySchema.parse(data);

@@ -55,6 +55,7 @@ model Category {
   id        String    @id @default(cuid())
   name      String    @unique
   slug      String    @unique
+  icon      String?
   image     String?
   sortOrder Int       @default(0)
   active    Boolean   @default(true)

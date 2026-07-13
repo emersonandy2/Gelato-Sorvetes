@@ -30,13 +30,14 @@ export class CategoryRepository {
     });
   }
 
-  async create(data: { name: string; slug?: string; image?: string; sortOrder?: number }) {
+  async create(data: { name: string; slug?: string; icon?: string; image?: string; sortOrder?: number }) {
     const slug = data.slug || slugify(data.name);
 
     return prisma.category.create({
       data: {
         name: data.name,
         slug,
+        icon: data.icon,
         image: data.image,
         sortOrder: data.sortOrder ?? 0,
       },
@@ -45,7 +46,7 @@ export class CategoryRepository {
 
   async update(
     id: string,
-    data: { name?: string; slug?: string; image?: string; sortOrder?: number; active?: boolean }
+    data: { name?: string; slug?: string; icon?: string; image?: string; sortOrder?: number; active?: boolean }
   ) {
     const updateData: Record<string, unknown> = { ...data };
     if (data.name && !data.slug) {

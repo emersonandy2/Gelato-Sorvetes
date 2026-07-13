@@ -13,13 +13,13 @@ export class CategoryService {
     return categoryRepository.findById(id);
   }
 
-  async createCategory(data: { name: string; slug?: string; image?: string; sortOrder?: number }) {
+  async createCategory(data: { name: string; slug?: string; icon?: string; image?: string; sortOrder?: number }) {
     return categoryRepository.create(data);
   }
 
   async updateCategory(
     id: string,
-    data: { name?: string; slug?: string; image?: string; sortOrder?: number; active?: boolean }
+    data: { name?: string; slug?: string; icon?: string; image?: string; sortOrder?: number; active?: boolean }
   ) {
     return categoryRepository.update(id, data);
   }

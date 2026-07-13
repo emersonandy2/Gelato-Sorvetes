@@ -110,12 +110,7 @@ export default function HomePage() {
                   <Card className="hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer">
                     <CardContent className="p-4 text-center">
                       <div className="text-3xl mb-2">
-                        {category.slug === "sorvete" && "🍨"}
-                        {category.slug === "gelato" && "🍦"}
-                        {category.slug === "acai" && "🍇"}
-                        {category.slug === "milkshake" && "🥤"}
-                        {category.slug === "combo" && "🎉"}
-                        {!["sorvete", "gelato", "acai", "milkshake", "combo"].includes(category.slug) && "🍫"}
+                        {category.icon || "📦"}
                       </div>
                       <h3 className="font-medium">{category.name}</h3>
                       {category._count && (

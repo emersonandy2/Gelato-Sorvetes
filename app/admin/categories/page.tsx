@@ -34,17 +34,44 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { ImageUpload } from "@/components/products/image-upload";
 import { getAllCategoriesAction, createCategoryAction, updateCategoryAction, deleteCategoryAction } from "@/features/admin/actions/admin.actions";
+import { slugify } from "@/lib/utils";
 import { toast } from "sonner";
+
+const ICON_OPTIONS = [
+  { value: "🍨", label: "Sorvete" },
+  { value: "🍦", label: "Cone" },
+  { value: "🍇", label: "Açaí" },
+  { value: "🥤", label: "Milkshake" },
+  { value: "🎉", label: "Combo" },
+  { value: "🍫", label: "Chocolate" },
+  { value: "🍰", label: "Bolo" },
+  { value: "🧃", label: "Bebida" },
+  { value: "🧊", label: "Picolé" },
+  { value: "🧁", label: "Cupcake" },
+  { value: "🍮", label: "Pudim" },
+  { value: "🍡", label: "Dango" },
+  { value: "🍪", label: "Biscoito" },
+  { value: "🎂", label: "Aniversário" },
+  { value: "⭐", label: "Destaque" },
+  { value: "🔥", label: "Popular" },
+  { value: "❄️", label: "Frio" },
+  { value: "🌴", label: "Tropical" },
+  { value: "🍬", label: "Doce" },
+  { value: "☕", label: "Café" },
+];
 
 export default function AdminCategoriesPage() {
   const [categories, setCategories] = useState<
-    { id: string; name: string; slug: string; _count: { products: number } }[]
+    { id: string; name: string; slug: string; icon?: string | null; image?: string | null; _count: { products: number } }[]
   >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<{ id: string; name: string } | null>(null);
+  const [editingCategory, setEditingCategory] = useState<{ id: string; name: string; icon?: string | null; image?: string | null } | null>(null);
   const [categoryName, setCategoryName] = useState("");
+  const [categoryIcon, setCategoryIcon] = useState("🍨");
+  const [categoryImage, setCategoryImage] = useState("");
 
   useEffect(() => {
     loadCategories();
@@ -62,15 +89,26 @@ export default function AdminCategoriesPage() {
 
     try {
       if (editingCategory) {
-        await updateCategoryAction(editingCategory.id, { name: categoryName });
+        await updateCategoryAction(editingCategory.id, {
+          name: categoryName,
+          icon: categoryIcon,
+          image: categoryImage || undefined,
+        });
         toast.success("Categoria atualizada!");
       } else {
-        await createCategoryAction({ name: categoryName });
+        await createCategoryAction({
+          name: categoryName,
+          slug: slugify(categoryName),
+          icon: categoryIcon,
+          image: categoryImage || undefined,
+        });
         toast.success("Categoria criada!");
       }
       setIsDialogOpen(false);
       setEditingCategory(null);
       setCategoryName("");
+      setCategoryIcon("🍨");
+      setCategoryImage("");
       loadCategories();
     } catch {
       toast.error("Erro ao salvar categoria");
@@ -87,15 +125,19 @@ export default function AdminCategoriesPage() {
     }
   }
 
-  function openEdit(category: { id: string; name: string }) {
+  function openEdit(category: { id: string; name: string; icon?: string | null; image?: string | null }) {
     setEditingCategory(category);
     setCategoryName(category.name);
+    setCategoryIcon(category.icon || "🍨");
+    setCategoryImage(category.image || "");
     setIsDialogOpen(true);
   }
 
   function openNew() {
     setEditingCategory(null);
     setCategoryName("");
+    setCategoryIcon("🍨");
+    setCategoryImage("");
     setIsDialogOpen(true);
   }
 
@@ -121,6 +163,7 @@ export default function AdminCategoriesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Ícone</TableHead>
                   <TableHead>Nome</TableHead>
                   <TableHead>Slug</TableHead>
                   <TableHead>Produtos</TableHead>
@@ -130,6 +173,7 @@ export default function AdminCategoriesPage() {
               <TableBody>
                 {categories.map((category) => (
                   <TableRow key={category.id}>
+                    <TableCell className="text-2xl">{category.icon || "📦"}</TableCell>
                     <TableCell className="font-medium">{category.name}</TableCell>
                     <TableCell className="text-muted-foreground">{category.slug}</TableCell>
                     <TableCell>{category._count.products}</TableCell>
@@ -168,7 +212,7 @@ export default function AdminCategoriesPage() {
       )}
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>{editingCategory ? "Editar Categoria" : "Nova Categoria"}</DialogTitle>
           </DialogHeader>
@@ -179,6 +223,39 @@ export default function AdminCategoriesPage() {
                 value={categoryName}
                 onChange={(e) => setCategoryName(e.target.value)}
                 placeholder="Nome da categoria"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Ícone</Label>
+              <div className="grid grid-cols-10 gap-2">
+                {ICON_OPTIONS.map((icon) => (
+                  <button
+                    key={icon.value}
+                    type="button"
+                    onClick={() => setCategoryIcon(icon.value)}
+                    className={`w-10 h-10 rounded-lg border-2 flex items-center justify-center text-xl transition-all ${
+                      categoryIcon === icon.value
+                        ? "border-primary bg-primary/10 scale-110"
+                        : "border-border hover:border-primary/50"
+                    }`}
+                    title={icon.label}
+                  >
+                    {icon.value}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Ícone selecionado: <span className="text-lg">{categoryIcon}</span>
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Imagem da Categoria (opcional)</Label>
+              <ImageUpload
+                onUpload={(url) => setCategoryImage(url)}
+                currentImage={categoryImage || undefined}
+                folder="gelato/categories"
               />
             </div>
           </div>
