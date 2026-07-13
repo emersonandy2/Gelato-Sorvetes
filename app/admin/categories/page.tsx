@@ -40,6 +40,7 @@ import { slugify } from "@/lib/utils";
 import { toast } from "sonner";
 
 const ICON_OPTIONS = [
+  { value: "", label: "Nenhum" },
   { value: "🍨", label: "Sorvete" },
   { value: "🍦", label: "Cone" },
   { value: "🍇", label: "Açaí" },
@@ -70,7 +71,7 @@ export default function AdminCategoriesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<{ id: string; name: string; icon?: string | null; image?: string | null } | null>(null);
   const [categoryName, setCategoryName] = useState("");
-  const [categoryIcon, setCategoryIcon] = useState("🍨");
+  const [categoryIcon, setCategoryIcon] = useState("");
   const [categoryImage, setCategoryImage] = useState("");
 
   useEffect(() => {
@@ -107,7 +108,7 @@ export default function AdminCategoriesPage() {
       setIsDialogOpen(false);
       setEditingCategory(null);
       setCategoryName("");
-      setCategoryIcon("🍨");
+      setCategoryIcon("");
       setCategoryImage("");
       loadCategories();
     } catch {
@@ -128,7 +129,7 @@ export default function AdminCategoriesPage() {
   function openEdit(category: { id: string; name: string; icon?: string | null; image?: string | null }) {
     setEditingCategory(category);
     setCategoryName(category.name);
-    setCategoryIcon(category.icon || "🍨");
+    setCategoryIcon(category.icon || "");
     setCategoryImage(category.image || "");
     setIsDialogOpen(true);
   }
@@ -136,7 +137,7 @@ export default function AdminCategoriesPage() {
   function openNew() {
     setEditingCategory(null);
     setCategoryName("");
-    setCategoryIcon("🍨");
+    setCategoryIcon("");
     setCategoryImage("");
     setIsDialogOpen(true);
   }
@@ -173,7 +174,7 @@ export default function AdminCategoriesPage() {
               <TableBody>
                 {categories.map((category) => (
                   <TableRow key={category.id}>
-                    <TableCell className="text-2xl">{category.icon || "📦"}</TableCell>
+                    <TableCell className="text-2xl">{category.icon || "—"}</TableCell>
                     <TableCell className="font-medium">{category.name}</TableCell>
                     <TableCell className="text-muted-foreground">{category.slug}</TableCell>
                     <TableCell>{category._count.products}</TableCell>
@@ -231,7 +232,7 @@ export default function AdminCategoriesPage() {
               <div className="grid grid-cols-10 gap-2">
                 {ICON_OPTIONS.map((icon) => (
                   <button
-                    key={icon.value}
+                    key={icon.value || "none"}
                     type="button"
                     onClick={() => setCategoryIcon(icon.value)}
                     className={`w-10 h-10 rounded-lg border-2 flex items-center justify-center text-xl transition-all ${
@@ -241,12 +242,12 @@ export default function AdminCategoriesPage() {
                     }`}
                     title={icon.label}
                   >
-                    {icon.value}
+                    {icon.value || "—"}
                   </button>
                 ))}
               </div>
               <p className="text-xs text-muted-foreground">
-                Ícone selecionado: <span className="text-lg">{categoryIcon}</span>
+                Ícone selecionado: <span className="text-lg">{categoryIcon || "Nenhum"}</span>
               </p>
             </div>
 
